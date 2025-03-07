@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Clicker Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function checkLogin() {
+            let loggedIn = sessionStorage.getItem("loggedIn");
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+
+            if (loggedIn !== "true") {
+                alert("You must be logged in!");
+                window.location.href = "login.html";
+            } else {
+                document.getElementById("displayUsername").innerText = "Welcome, " + loggedInUser + "!";
+            }
+        }
+
+        function increaseScore() {
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+            let score = localStorage.getItem(loggedInUser) || 0;
+            score = parseInt(score) + 1;
+            localStorage.setItem(loggedInUser, score);
+            document.getElementById("score").innerText = score;
+            updateLeaderboard();
+        }
+
+        function resetScore() {
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+            localStorage.setItem(loggedInUser, 0);
+            document.getElementById("score").innerText = 0;
+            updateLeaderboard();
+        }
+
+        function loadScore() {
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+            let savedScore = localStorage.getItem(loggedInUser) || 0;
+            document.getElementById("score").innerText = savedScore;
+        }
+
+        function updateLeaderboard() {
+            let leaderboard = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key !== "registeredUser" && key !== "loggedInUser") {
+                    leaderboard.push({ name: key, score: parseInt(localStorage.getItem(key)) });
+                }
+            }
+
+            leaderboard.sort((a, b) => b.score - a.score); // Sort by highest score
+            let leaderboardHtml = leaderboard.map((entry, index) =>
+                `<tr><td>${index + 1}</td><td>${entry.name}</td><td>${entry.score}</td></tr>`).join("");
+            document.getElementById("leaderboardBody").innerHTML = leaderboardHtml;
+        }
+
+        function logout() {
+            sessionStorage.removeItem("loggedIn");
+            sessionStorage.removeItem("loggedInUser");
+            alert("Logged out successfully.");
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+<body onload="checkLogin(); loadScore(); updateLeaderboard();">
+    <div class="container">
+        <h2>Dashboard</h2>
+        <h3 id="displayUsername"></h3>
+
+        <!-- Clicker Game Section -->
+        <div class="game-section">
+            <h3>Clicker Game</h3>
+            <p>Click the button below to increase your score!</p>
+            <h2 id="score">0</h2>
+            <button onclick="increaseScore()">Click Me!</button>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div class="leaderboard-section">
+            <h3>Leaderboard</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody"></tbody>
+            </table>
+        </div>
+
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+</body>
+</html>

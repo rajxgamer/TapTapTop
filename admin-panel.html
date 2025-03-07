@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function checkAdmin() {
+            if (sessionStorage.getItem("isAdmin") !== "true") {
+                alert("Access Denied! Admins only.");
+                window.location.href = "admin-login.html";
+            } else {
+                loadUsers();
+            }
+        }
+
+        function loadUsers() {
+            let users = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key !== "registeredUser" && key !== "loggedInUser") {
+                    users.push({ name: key, score: localStorage.getItem(key) });
+                }
+            }
+
+            let userHtml = users.map((user, index) =>
+                `<tr>
+                    <td>${index + 1}</td>
+                    <td>${user.name}</td>
+                    <td><input type="number" id="score-${user.name}" value="${user.score}" /></td>
+                    <td>
+                        <button onclick="updateScore('${user.name}')">Update</button>
+                        <button class="delete" onclick="deleteUser('${user.name}')">Delete</button>
+                    </td>
+                </tr>`).join("");
+            document.getElementById("userTableBody").innerHTML = userHtml;
+        }
+
+        function updateScore(username) {
+            let newScore = document.getElementById(`score-${username}`).value;
+            localStorage.setItem(username, newScore);
+            loadUsers();
+        }
+
+        function deleteUser(username) {
+            localStorage.removeItem(username);
+            loadUsers();
+        }
+
+        function resetLeaderboard() {
+            localStorage.clear();
+            alert("Leaderboard reset!");
+            loadUsers();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem("isAdmin");
+            alert("Logged out.");
+            window.location.href = "admin-login.html";
+        }
+    </script>
+</head>
+<body onload="checkAdmin()">
+    <div class="container">
+        <h2>Admin Panel</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Score</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+        </table>
+
+        <button class="reset" onclick="resetLeaderboard()">Reset Leaderboard</button>
+        <button class="logout" onclick="logoutAdmin()">Logout</button>
+    </div>
+</body>
+</html>

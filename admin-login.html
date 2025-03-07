@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function adminLogin() {
+            let password = document.getElementById("adminPassword").value;
+            
+            if (password === "admin123") {  // Change this to a secure password
+                sessionStorage.setItem("isAdmin", "true");
+                window.location.href = "admin-panel.html";
+            } else {
+                alert("Incorrect admin password!");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Login</h2>
+        <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+        <button onclick="adminLogin()">Login as Admin</button>
+    </div>
+</body>
+</html>
