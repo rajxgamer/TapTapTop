@@ -1,2 +1,0 @@
-# TapTapTop
-Clicker Game 
